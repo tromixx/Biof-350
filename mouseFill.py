@@ -1,6 +1,6 @@
-from Tkinter import *
-from tkFileDialog import askopenfilename
-import Image, ImageTk
+from tkinter import *
+from tkinter.filedialog import askopenfilename
+from PIL import Image, ImageTk
 from math import *
 #from multiprocessing import Pool#
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     root.mainloop()
 
 
-
+thresh=130
 def floodfill(img_x, img_y):
     inside = 1
     filled_pixels = [(img_x, img_y)]
@@ -64,14 +64,16 @@ def floodfill(img_x, img_y):
                 inside += 1
     return inside, filled_pixels
 
-
+print('hello')
 for x in range(width):
-	for y in range(height):
-		if pic.getpixel((x,y))[0] < thresh:
-			inside, filled_pixels = floodfill(x,y)
-			print "Inside was"
-			print inside
-			print " pixels"
+    for y in range(height):
+        print('made it')
+        if pic.getpixel((x,y))[0] < thresh:
+            print('started')
+            inside, filled_pixels = floodfill(x,y)
+            print ("Inside was")
+            print (inside)
+            print (" pixels")
 
 
 app = Tk()
@@ -82,3 +84,4 @@ canvas['height'] = height
 pimg = ImageTk.PhotoImage(image=pic)
 canvas.create_image(width/2, height/2, anchor='center', image=pimg)
 app.mainloop()
+
