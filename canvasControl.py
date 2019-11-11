@@ -1,9 +1,13 @@
-Learn more or give us feedback
 import random
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
+import os
 
+global MousePressX
+global MousePressY
+global MouseReleaseX
+global MouseReleaseY
 class AutoScrollbar(ttk.Scrollbar):
     ''' A scrollbar that hides itself if it's not needed.
         Works only if you use the grid geometry manager '''
@@ -47,6 +51,7 @@ class Zoom(ttk.Frame):
         self.canvas.bind('<B3-Motion>',     self.move_to)
         root.bind('<Up>',self.new_img)
         root.bind('<Key>', self.wheel)
+        root.bind('<Button-1>',self.startFlood)
         self.canvas.bind('<MouseWheel>', self.wheel)  # with Windows and MacOS, but not Linux
         self.canvas.bind('<Button-5>',   self.wheel)  # only with Linux, wheel scroll down
         self.canvas.bind('<Button-4>',   self.wheel)  # only with Linux, wheel scroll up
@@ -72,6 +77,8 @@ class Zoom(ttk.Frame):
 ##        print(event.char)
 
     def move_from(self, event):
+        global MousePressX
+        global MousePressY
         ''' Remember previous coordinates for scrolling with the mouse '''
         print(event.x,event.y)
         self.canvas.scan_mark(event.x, event.y)
@@ -79,6 +86,10 @@ class Zoom(ttk.Frame):
         MousePressY=event.y
 
     def move_to(self, event):
+        global MousePressX
+        global MousePressY
+        global MouseReleaseX
+        global MouseReleaseY
         ''' Drag (move) canvas to the new position '''
         self.canvas.scan_dragto(event.x, event.y, gain=1)
         MouseReleaseX=event.x
@@ -123,38 +134,114 @@ class Zoom(ttk.Frame):
         self.canvas.imagetk = imagetk  # keep an extra reference to prevent garbage-collection
 
 
-    def floodfill(img_x, img_y):
-        inside = 1
-        filled_pixels = [(img_x, img_y)] #paint them after
-        frontier = [(img_x,img_y)];
-        while len(frontier) > 0:
-            img_x, img_y = frontier.pop()
-            neighbors = [
-                    (img_x + 1,img_y),
-                    (img_x - 1,img_y),
-                    (img_x, img_y + 1),
-                    (img_x, img_y - 1)
-                    ];
-            for n in neighbors:
-                nx, ny = n
-                if nx < 0 or nx >= width:
-                    continue
-                if ny < 0 or ny >= height:
-                    continue
-                c = pic.getpixel((nx, ny));
-                if(c < thresh and c != 255):
-                    frontier.append(n)
-                    filled_pixels.append(n)
-                    pic.putpixel((nx, ny), (255))
-                    inside += 1
-        return inside, filled_pixels
+##    def floodfill(self, img_x, img_y):
+##        inside = 1
+##        thresh=130
+##        filled_pixels = [(img_x, img_y)] #paint them after
+##        frontier = [(img_x,img_y)];
+##        while len(frontier) > 0:
+##            img_x, img_y = frontier.pop()
+##            neighbors = [
+##                    (img_x + 1,img_y),
+##                    (img_x - 1,img_y),
+##                    (img_x, img_y + 1),
+##                    (img_x, img_y - 1)
+##                    ];
+##            for n in neighbors:
+##                nx, ny = n
+##                if nx < 0 or nx >= width:
+##                    continue
+##                if ny < 0 or ny >= height:
+##                    continue
+##                c = stack[0].getpixel((nx, ny));
+##                if(c < thresh and c != 255):
+##                    frontier.append(n)
+##                    filled_pixels.append(n)
+##                    stack[0].putpixel((nx, ny), (255))
+##                    inside += 1
+##        print('did it')
+##        stack_0.show()
+##        return inside, filled_pixels
 
-    if("<Button 3>"==True):
-        floodfill(event.x, event.y)
+    def yup(self,x,y,z):
+    count = []
+    global countc
+    pixely = 0
+    count.append(x)
+    count.append(y)
+    count.append(z)
+    #print('hi')
+    #print(len(stack))
+    while count != []:
+##        print(stack[count[2]])
+        if stack[count[2]].getpixel((count[0],count[1]))>thresh and stack[count[2]].getpixel((count[0],count[1]))!=254:
+            stack[count[2]].putpixel((count[0],count[1]),(254))
+            pixely += 1
+            print(pixely)
+            if count[0] != height-1:
+                if stack[count[2]].getpixel((count[0]+1,count[1]))>thresh and stack[count[2]].getpixel((count[0]+1,count[1]))!=254:
+                    count.append(count[0]+1)
+                    count.append(count[1])
+                    count.append(count[2])
+            if count[0] != 0:
+                if stack[count[2]].getpixel((count[0]-1,count[1]))>thresh and stack[count[2]].getpixel((count[0]-1,count[1]))!=254:
+                    count.append(count[0]-1)
+                    count.append(count[1])
+                    count.append(count[2])
+            if count[1] != width-1:
+                if stack[count[2]].getpixel((count[0],count[1]+1))>thresh and stack[count[2]].getpixel((count[0],count[1]+1))!=254:
+                    count.append(count[0])
+                    count.append(count[1]+1)
+                    count.append(count[2])
+            if count[1] != 0:
+                if stack[count[2]].getpixel((count[0],count[1]-1))>thresh and stack[count[2]].getpixel((count[0],count[1]-1))!=254:
+                    count.append(count[0])
+                    count.append(count[1]-1)
+                    count.append(count[2])
+            if count[2] != 0:
+                down=count[2]-1
+                if stack[down].getpixel((count[0],count[1]))>thresh and stack[count[2]].getpixel((count[0],count[1]))!=254:
+                    count.append(count[0])
+                    count.append(count[1])
+                    count.append(down)
+            if count[2] != len(stack)-1:
+                up=count[2]+1
+                #print(count[2],up)
+                if stack[up].getpixel((count[0],count[1]))>thresh and stack[count[2]].getpixel((count[0],count[1]))!=254:
+                    count.append(count[0])
+                    count.append(count[1])
+                    count.append(up)
+            #print(pixely)
+        count.remove(count[0])
+        count.remove(count[0])
+        count.remove(count[0])
+##        if pixely%10000:
+##            stack_0.show()
+    return pixely
+    def startFlood(self, event):
+        x,y=event.x,event.y
+        print(x,y)
+##        inside, filled_pixels = self.floodfill(x, y)
+##        print(inside)
+##    if("<Button 1>"==True):
+##        floodfill(event.x, event.y)
+stack = []
+count = 0
+for filename in os.listdir('./test'):
+    if filename.endswith(".png"): 
+        print(os.path.join('./test', filename))
+##            stack.append('./test/' + filename)
+        exec('stack_' + str(count) + ' = ' + str('Image.open("./test/' + filename + '")'))
+##            stack+count.show()
+        #print(exec('stack_'+str(count)))
+        stack.append(eval('stack_'+str(count)))
+        count+=1
+        continue
+    else:
+        continue
 
 
-
-path = 'B1_Run02_BSED_slice_0021.png'  # place path to your image here
+path = './test\B1_Run02_BSED_slice_0001.png'  # place path to your image here
 root = tk.Tk()
 app = Zoom(root, path=path)
 width, height = root.winfo_screenwidth(), root.winfo_screenheight()
