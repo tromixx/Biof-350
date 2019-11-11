@@ -134,90 +134,35 @@ class Zoom(ttk.Frame):
         self.canvas.imagetk = imagetk  # keep an extra reference to prevent garbage-collection
 
 
-##    def floodfill(self, img_x, img_y):
-##        inside = 1
-##        thresh=130
-##        filled_pixels = [(img_x, img_y)] #paint them after
-##        frontier = [(img_x,img_y)];
-##        while len(frontier) > 0:
-##            img_x, img_y = frontier.pop()
-##            neighbors = [
-##                    (img_x + 1,img_y),
-##                    (img_x - 1,img_y),
-##                    (img_x, img_y + 1),
-##                    (img_x, img_y - 1)
-##                    ];
-##            for n in neighbors:
-##                nx, ny = n
-##                if nx < 0 or nx >= width:
-##                    continue
-##                if ny < 0 or ny >= height:
-##                    continue
-##                c = stack[0].getpixel((nx, ny));
-##                if(c < thresh and c != 255):
-##                    frontier.append(n)
-##                    filled_pixels.append(n)
-##                    stack[0].putpixel((nx, ny), (255))
-##                    inside += 1
-##        print('did it')
-##        stack_0.show()
-##        return inside, filled_pixels
+    def floodfill(self, img_x, img_y):
+        inside = 1
+        thresh=130
+        filled_pixels = [(img_x, img_y)] #paint them after
+        frontier = [(img_x,img_y)];
+        while len(frontier) > 0:
+            img_x, img_y = frontier.pop()
+            neighbors = [
+                    (img_x + 1,img_y),
+                    (img_x - 1,img_y),
+                    (img_x, img_y + 1),
+                    (img_x, img_y - 1)
+                    ];
+            for n in neighbors:
+                nx, ny = n
+                if nx < 0 or nx >= width:
+                    continue
+                if ny < 0 or ny >= height:
+                    continue
+                c = stack[0].getpixel((nx, ny));
+                if(c < thresh and c != 255):
+                    frontier.append(n)
+                    filled_pixels.append(n)
+                    stack[0].putpixel((nx, ny), (255))
+                    inside += 1
+        print('did it')
+        stack_0.show()
+        return inside, filled_pixels
 
-    def yup(self,x,y,z):
-    count = []
-    global countc
-    pixely = 0
-    count.append(x)
-    count.append(y)
-    count.append(z)
-    #print('hi')
-    #print(len(stack))
-    while count != []:
-##        print(stack[count[2]])
-        if stack[count[2]].getpixel((count[0],count[1]))>thresh and stack[count[2]].getpixel((count[0],count[1]))!=254:
-            stack[count[2]].putpixel((count[0],count[1]),(254))
-            pixely += 1
-            print(pixely)
-            if count[0] != height-1:
-                if stack[count[2]].getpixel((count[0]+1,count[1]))>thresh and stack[count[2]].getpixel((count[0]+1,count[1]))!=254:
-                    count.append(count[0]+1)
-                    count.append(count[1])
-                    count.append(count[2])
-            if count[0] != 0:
-                if stack[count[2]].getpixel((count[0]-1,count[1]))>thresh and stack[count[2]].getpixel((count[0]-1,count[1]))!=254:
-                    count.append(count[0]-1)
-                    count.append(count[1])
-                    count.append(count[2])
-            if count[1] != width-1:
-                if stack[count[2]].getpixel((count[0],count[1]+1))>thresh and stack[count[2]].getpixel((count[0],count[1]+1))!=254:
-                    count.append(count[0])
-                    count.append(count[1]+1)
-                    count.append(count[2])
-            if count[1] != 0:
-                if stack[count[2]].getpixel((count[0],count[1]-1))>thresh and stack[count[2]].getpixel((count[0],count[1]-1))!=254:
-                    count.append(count[0])
-                    count.append(count[1]-1)
-                    count.append(count[2])
-            if count[2] != 0:
-                down=count[2]-1
-                if stack[down].getpixel((count[0],count[1]))>thresh and stack[count[2]].getpixel((count[0],count[1]))!=254:
-                    count.append(count[0])
-                    count.append(count[1])
-                    count.append(down)
-            if count[2] != len(stack)-1:
-                up=count[2]+1
-                #print(count[2],up)
-                if stack[up].getpixel((count[0],count[1]))>thresh and stack[count[2]].getpixel((count[0],count[1]))!=254:
-                    count.append(count[0])
-                    count.append(count[1])
-                    count.append(up)
-            #print(pixely)
-        count.remove(count[0])
-        count.remove(count[0])
-        count.remove(count[0])
-##        if pixely%10000:
-##            stack_0.show()
-    return pixely
     def startFlood(self, event):
         x,y=event.x,event.y
         print(x,y)
