@@ -1,3 +1,4 @@
+Learn more or give us feedback
 import random
 import tkinter as tk
 from tkinter import ttk
@@ -74,10 +75,16 @@ class Zoom(ttk.Frame):
         ''' Remember previous coordinates for scrolling with the mouse '''
         print(event.x,event.y)
         self.canvas.scan_mark(event.x, event.y)
+        MousePressX=event.x
+        MousePressY=event.y
 
     def move_to(self, event):
         ''' Drag (move) canvas to the new position '''
         self.canvas.scan_dragto(event.x, event.y, gain=1)
+        MouseReleaseX=event.x
+        MouseReleaseY=event.y
+        FinalPositionX= MousePressX- MouseReleaseX
+        FinalPositionY= MousePressY- MouseReleaseY
 
     def wheel(self, event):
         ''' Zoom with mouse wheel '''
@@ -98,6 +105,7 @@ class Zoom(ttk.Frame):
     def new_img(self, event):
         print(event.char)
         app=Zoom(root, path="B1run02_png/B1_Run02_BSED_slice_0022.png")
+        #Add the position to load FinalPositionX, FinalPositionY##########################
         
     def show_image(self):
         ''' Show image on the Canvas '''
@@ -113,6 +121,38 @@ class Zoom(ttk.Frame):
                                                 anchor='nw', image=imagetk)
         self.canvas.lower(self.imageid)  # set it into background
         self.canvas.imagetk = imagetk  # keep an extra reference to prevent garbage-collection
+
+
+    def floodfill(img_x, img_y):
+        inside = 1
+        filled_pixels = [(img_x, img_y)] #paint them after
+        frontier = [(img_x,img_y)];
+        while len(frontier) > 0:
+            img_x, img_y = frontier.pop()
+            neighbors = [
+                    (img_x + 1,img_y),
+                    (img_x - 1,img_y),
+                    (img_x, img_y + 1),
+                    (img_x, img_y - 1)
+                    ];
+            for n in neighbors:
+                nx, ny = n
+                if nx < 0 or nx >= width:
+                    continue
+                if ny < 0 or ny >= height:
+                    continue
+                c = pic.getpixel((nx, ny));
+                if(c < thresh and c != 255):
+                    frontier.append(n)
+                    filled_pixels.append(n)
+                    pic.putpixel((nx, ny), (255))
+                    inside += 1
+        return inside, filled_pixels
+
+    if("<Button 3>"==True):
+        floodfill(event.x, event.y)
+
+
 
 path = 'B1_Run02_BSED_slice_0021.png'  # place path to your image here
 root = tk.Tk()
