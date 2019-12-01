@@ -1,4 +1,3 @@
-guardan en image individual
 import random
 import tkinter as tk
 from tkinter import ttk
@@ -193,7 +192,7 @@ class Zoom(ttk.Frame):
     	############# guardar como nueva imagen like stack_0.saveimg('path/to/save/image/to.png')
     	############# guardar como nueva imagen like stack_0.savefig('path/to/save/image/to.png')
         stack_0.show()
-        stack_9.save(path)
+        #stack_9.save(path)
         return pixely
     def startFlood(self, event):
         x,y=event.x,event.y
